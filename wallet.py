@@ -107,7 +107,7 @@ def send_tx_id (sender_acc_priv_key,recipient_address,amount,coin):
     send_message_succ = send_tx(sender_acc_priv_key,recipient_address,amount,coin)
     if send_message_succ==1:
         time.sleep(20)
-        sender_address_tx = PrivateKeyTestnet("cNtNRuDWJcJfYxGZ8GCJVjq7xGzQ1gokMkALQuow3Wx3vvs7Z2Az").get_transactions()
+        sender_address_tx = PrivateKeyTestnet(sender_acc_priv_key).get_transactions()
         last_transac = sender_address_tx[0]
         return last_transac
     else:

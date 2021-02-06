@@ -18,7 +18,7 @@ The wallet is comprised of 3 sections:
 <img src="Images/wallet_address_image.png" width=350 height=280 align="right"/>This section consists of one function designed to generate the address, private key and public key of any cryptocurrency based on input the mnemonic phrase. the function defaults in generating 3 set of keys.
 
 
-The function named: `derive_wallets` (code below) relies on the `hd-wallet-derive` library (for installation and required dependencies, press here). 
+The function named: `derive_wallets` (code below) relies on the `hd-wallet-derive` library (for installation and required dependencies, press [here](##Libraries-and-Dependencies)). 
 ```python
 def derive_wallets(coin_name, mnemonic=mnemonic ,numb_derive=3):
     command = f'php derive -g --mnemonic="{mnemonic}" --cols=address,privkey,pubkey --numderive={numb_derive} --coin={coin_name} --format=json'
@@ -41,7 +41,7 @@ coins={"eth":derive_wallets(ETH),
 <img src="Images/848.gif" width=150 height=150 align="right"/>
 The next task was to design functions that could be called to send cryptocurrencies from the previously generated crypto addresses (children wallets from the main mnemonic phrase).
 
-The 3 functions are: 
+The 4 functions are: 
 
 &ensp; 1) priv_key_to_account: that reveals the public address based on the private key input. 
 
@@ -49,7 +49,24 @@ The 3 functions are:
 
 &ensp; 3) send_tx: this function essentially broadcast the transaction to the corresponding cryptocurrency network. When this function runs succesfully, it prints out a message `transaction successful` along with the coin and the amount of the transaction.
 
-In addition to that a fourth function was designed to use in cases when the transaction id is desired. This functions is called `send_tx_id`. 
+&ensp; 4) send_tx_id: This functions was designed with the intention of tracking the transaction status by providing the Network approved transaction number or `txid` (challenge mode). To grasp the `approved` transaction id, a 20 seconds sleep timer was introduced after the send_tx() function ran succesfully (first line of the function) and then grabbed a list of transactions from the sender account and narrowed to the index 0 from the list, since the `get_transactions()` function generates a list of all the transactions in which this private key was involved in descending order (newest to oldest).
+
+```python
+def send_tx_id (sender_acc_priv_key,recipient_address,amount,coin):
+    send_message_succ = send_tx(sender_acc_priv_key,recipient_address,amount,coin)
+    if send_message_succ==1:
+        time.sleep(20)
+        sender_address_tx = PrivateKeyTestnet(sender_acc_priv_key).get_transactions()
+        last_transac = sender_address_tx[0]
+        return last_transac
+    else:
+        print("transaction failed")
+```    
+This timer allows to wait for the network `confirming` the transaction and thus including the reference number in the Network ledger.
+
+After the timer is finished, the last transaction identifier is grabbed. Below an image of the code in action from the terminal.
+
+![execution from the terminal](Screenshots/tx_from_terminal.png)
 
 
 <p style="text-align: center;"> <font size="4"> Table 1 - Bit-test derived addresses </font></p>
@@ -92,3 +109,4 @@ In addition, `hd-wallet-derive` library must be installed prior to running the w
 
 1) [Trilogy Education Services](https://www.trilogyed.com/)
 2) [crypto gif](https://icons8.com/preloaders/en/cryptocurrency_and_money/)
+3) [Bit Library by ofek](https://ofek.dev/bit/guide/transactions.html)
