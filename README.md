@@ -1,9 +1,23 @@
-# wallet
+# Wallet
 
-# Bit-test derived addresses
+The objective of this repository is to design a wallet that can send either testnet bitcoin or testnet ethereum crytpocurrencies to any counterpart address that meet the requirementes of the network.
+
+In addition to that, the wallet has provisions to execute transactions with real bitcoin.
+
+The wallet is comprised of 2 sections:
+
+&ensp; **Section 1:** Address derive, which includes generating 3 children wallets (or 3 set of addresses) for four Crypto currency Networks: Bitcoin (BTC), Bitcoin-testnet (BTCTEST), Ethereum (ETH) and Litecoin (LTC).  
+
+&ensp; **Section 2:** Transactions execution along the testnet bitcoin network (btc-test) and the local Ethereum Network.
+
+## Section 1 - Address Derive
+
+
+
+## Bit-test derived addresses
 <table>
   <tr>
-    <td><font size="4">Add No. </font></td>
+    <td><font size="3">Add No. </font></td>
     <td><font size="4">Address </font></td>
     <td><font size="4">Private Key</font></td>
     <td><font size="4">Public Key </font></td>
