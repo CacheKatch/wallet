@@ -57,7 +57,7 @@ def priv_key_to_account (coin,priv_key):
     given its corresponding private key
     """
     if coin==ETH:
-        account_address = Account.privateKeyToAccount(priv_key)
+        account_address = Account.privateKeyToAccount(priv_key).address
     if coin==BTCTEST:
         account_address = PrivateKeyTestnet(priv_key).address
     if coin==BTC:
@@ -77,6 +77,20 @@ def create_tx(sender_acc_priv_key,recipient_address,amount,coin):
         wrap_prep_tx = my_key_testnet.prepare_transaction(my_address_to_display,outputs=outputs3)
         tx_hex=my_key_testnet.sign_transaction(wrap_prep_tx)
         return tx_hex
+    if coin==ETH:
+        my_address_to_display = priv_key_to_account(coin,sender_acc_priv_key)
+        gasEstimate = w3.eth.estimateGas(
+            {"from": my_address_to_display, "to": recipient_address, "value": amount}
+        )
+        my_gas_incentive = gasEstimate
+        return {
+            "from": my_address_to_display,
+            "to": recipient_address,
+            "value": amount,
+            "gasPrice": w3.eth.gasPrice,
+            "gas": my_gas_incentive,
+            "nonce": w3.eth.getTransactionCount(my_address_to_display),
+        }
 
 # function to send transactions to the network (it produces a message when send is succesful)
 
@@ -91,9 +105,11 @@ def send_tx(sender_acc_priv_key,recipient_address,amount,coin):
         sender_address_tx = PrivateKeyTestnet(sender_acc_priv_key).get_transactions()
         
     if coin==ETH:
-        tx = create_tx(coin,account,recipient_address, amount)
-        signed_tx = account.sign_transaction(tx)
+        tx = create_tx(sender_acc_priv_key,recipient_address,amount,coin)
+        signer_key = Account.from_key(sender_acc_priv_key)
+        signed_tx = signer_key.sign_transaction(tx)
         result = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
+        print(result.hex())
         return result.hex()
 
     send_succ_message = 1
