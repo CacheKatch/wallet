@@ -19,6 +19,7 @@ The wallet is comprised of 3 sections:
 
 
 The function named: `derive_wallets` (code below) relies on the `hd-wallet-derive` library (for installation and required dependencies, press [here](##Libraries-and-Dependencies)). 
+
 ```python
 def derive_wallets(coin_name, mnemonic=mnemonic ,numb_derive=3):
     command = f'php derive -g --mnemonic="{mnemonic}" --cols=address,privkey,pubkey --numderive={numb_derive} --coin={coin_name} --format=json'
@@ -35,21 +36,27 @@ coins={"eth":derive_wallets(ETH),
     "btc":derive_wallets(BTC),
     "ltc":derive_wallets(LTC)}
 ```
+Below a short video demonstrating the functionality of the hd-wallet-derive from the terminal
+
+![video of hd-wallet](Screenshots/verify_install.gif)
+
 
 ## Section 2 - Transactions with Bitcoin Testnet
 
 <img src="Images/848.gif" width=150 height=150 align="right"/>
-The next task was to design functions that could be called to send cryptocurrencies from the previously generated crypto addresses (children wallets from the main mnemonic phrase).
+The next task was to design functions that could be called to send cryptocurrencies to/from the previously generated crypto addresses (children wallets from the main mnemonic phrase).
 
-The 4 functions are: 
+There are five functions, which are described below: 
 
 &ensp; 1) priv_key_to_account: that reveals the public address based on the private key input. 
 
-&ensp; 2) create_tx: that prepares offline the transaction, with the inputs of: sender private key, recipient address, amount, and coin (currency). when this function runs succesfully, prints out a `string` with the sender address. 
+&ensp; 2) create_tx: that prepares offline the transaction, with the inputs of: sender private key, recipient address, amount, and coin (currency). when this function runs succesfully, prints out a `string` with the sender address. For the BTC testnet network and BTC network the output of this function is ready to broadcast, while ethereum transactions need an extra step to `approval`. 
 
-&ensp; 3) send_tx: this function essentially broadcast the transaction to the corresponding cryptocurrency network. When this function runs succesfully, it prints out a message `transaction successful` along with the coin and the amount of the transaction.
+&ensp; 3) sign_tx: This function is only used for ethereum transactions. It takes the output of create_tx and `approve` it using the `sender private key`. After this, ethereum transactions are ready to broadcast.
 
-&ensp; 4) send_tx_id: This functions was designed with the intention of tracking the transaction status by providing the Network approved transaction number or `txid` (challenge mode). To grasp the `approved` transaction id, a 20 seconds sleep timer was introduced after the send_tx() function ran succesfully (first line of the function) and then grabbed a list of transactions from the sender account and narrowed to the index 0 from the list, since the `get_transactions()` function generates a list of all the transactions in which this private key was involved in descending order (newest to oldest).
+&ensp; 4) send_tx: this function essentially broadcast the transaction to the corresponding cryptocurrency network. When this function runs succesfully, it prints out a message `transaction successful` along with the coin and the amount of the transaction.
+
+&ensp; 5) send_tx_id: This functions was designed with the intention of tracking the transaction status by providing the Network approved transaction number or `txid` (challenge mode). To grasp the `approved` transaction id, a 20 seconds sleep timer was introduced after the send_tx() function ran succesfully (first line of the function) and then grabbed a list of transactions from the sender account and narrowed to the index 0 from the list, since the `get_transactions()` function generates a list of all the transactions in which this private key was involved in descending order (newest to oldest).
 
 ```python
 def send_tx_id (sender_acc_priv_key,recipient_address,amount,coin):
@@ -80,17 +87,21 @@ After the timer is finished, the last transaction identifier is grabbed. Below a
 
 Before executing wallet transactions with ethereum, katchcoin network nodes must be running. Instructions to run katchcoin private network nodes are [here](https://github.com/CacheKatch/ckcoin_blockchain/blob/main/README.md). 
 
-![execution from wallet.py](Screenshots/tx_from_terminal.png)
+Then a few transactions were succesfully submitted using MyCrypto app, before executing transaction from the terminal. 
 
-Then a few transactions were succesfully tested using MyCrypto app, before executing transaction from the terminal. All of them were succesfull.
+Next, the transactions functions were ran from notebook and the terminal, with mixed results. Some transactions were successful (screenshots below). 
+![execution from wallet.py](Screenshots/tx_eth_success_hash.png)
 
+View from katchcoin nodes. Notice the ledge `timed at 00:44:21.589`.
+![execution from wallet.py](Screenshots/eth_success_from_terminal_nodeview.png)
 
-<img src="Images/error_on_PoA_local_network.png" width=500 height=200 align="left"/> Although we got succesfull transaction, it was encountered a peculiar situation when executing more transactions to the local katchcoin network from the terminal. An error message appeared: `"Returned error: replacement transaction underpriced"`.  This error message seems to be related to having `pending` transactions on the network that compete with the new one.  
+ Although a succesfull transaction was documented, it was encountered a peculiar situation when executing more transactions to the local katchcoin network from the terminal. An error message appeared: `"Returned error: replacement transaction underpriced"`.  This error message seems to be related to having `pending` transactions on the network that takes priority over new ones.  <img src="Images/error_on_PoA_local_network.png" width=500 height=200 align="left"/>
 
+ Transactions that comes to the network competes with pending transactions, and to succesfully `lure` the node to `process` new transactions is by increasing `gas price`, which I accomplished by increasing the transaction amount. Thus the successful hash `timed at 00:44:21.589`.
 
+ After getting that successful transaction, submissions that came after that, stayed `pending` in the katchcoin network, and the error appeared.  
 
-
-
+  
 
 
 <p style="text-align: center;"> <font size="4"> Table 1 - Bit-test derived addresses </font></p>
