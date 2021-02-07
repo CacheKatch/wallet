@@ -32,6 +32,15 @@ import pandas as pd
 #imports for delays and waiting
 import time
 
+# imports for future use (to access wallet with keystore file)
+from pathlib import Path
+from getpass import getpass
+
+# to establish connection with ethereum local network
+w3 = Web3(Web3.HTTPProvider("http://127.0.0.1:8545"))
+w3.middleware_onion.inject(geth_poa_middleware, layer=0)
+
+
 mnemonic = os.getenv("MNEMONIC","""rough pull enemy remove resource toward army okay slender rapid uphold segment""")
 
 # Function to derive children wallets based on mnemonic phrase input
@@ -92,6 +101,15 @@ def create_tx(sender_acc_priv_key,recipient_address,amount,coin):
             "nonce": w3.eth.getTransactionCount(my_address_to_display),
         }
 
+# this function is to sign Ethereum transactions
+
+def sign_tx(sender_acc_priv_key,recipient_address,amount,coin):
+    if coin==ETH:
+        prep_tran = create_tx(sender_acc_priv_key,recipient_address,amount,coin)
+        signed_tx = signer_key.sign_transaction(prep_tran)
+        return signed_tx
+
+
 # function to send transactions to the network (it produces a message when send is succesful)
 
 
@@ -105,12 +123,9 @@ def send_tx(sender_acc_priv_key,recipient_address,amount,coin):
         sender_address_tx = PrivateKeyTestnet(sender_acc_priv_key).get_transactions()
         
     if coin==ETH:
-        tx = create_tx(sender_acc_priv_key,recipient_address,amount,coin)
-        signer_key = Account.from_key(sender_acc_priv_key)
-        signed_tx = signer_key.sign_transaction(tx)
-        result = w3.eth.sendRawTransaction(signed_tx.rawTransaction)
-        print(result.hex())
-        return result.hex()
+        signed_tx = sign_tx(sender_acc_priv_key,recipient_address,amount,coin)
+        broadcast_tx = w3.eth.sendRawTransaction(signed_tx2.rawTransaction)
+        return broadcast_tx
 
     send_succ_message = 1
     print(amount, coin, "transaction successful")
@@ -120,12 +135,18 @@ def send_tx(sender_acc_priv_key,recipient_address,amount,coin):
 
 
 def send_tx_id (sender_acc_priv_key,recipient_address,amount,coin):
-    send_message_succ = send_tx(sender_acc_priv_key,recipient_address,amount,coin)
-    if send_message_succ==1:
-        time.sleep(20)
-        sender_address_tx = PrivateKeyTestnet(sender_acc_priv_key).get_transactions()
-        last_transac = sender_address_tx[0]
-        return last_transac
+    if coin==ETH:
+        signed_tx = sign_tx(sender_acc_priv_key,recipient_address,amount,coin)
+        broadcast_tx = w3.eth.sendRawTransaction(signed_tx2.rawTransaction)
+        return broadcast_tx
+    
+    elif coin==BTCTEST:
+        send_message_succ = send_tx(sender_acc_priv_key,recipient_address,amount,coin)
+        if send_message_succ==1:
+            time.sleep(20)
+            sender_address_tx = PrivateKeyTestnet(sender_acc_priv_key).get_transactions()
+            last_transac = sender_address_tx[0]
+            return last_transac
     else:
         print("transaction failed")
     

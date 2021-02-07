@@ -53,12 +53,18 @@ The 4 functions are:
 
 ```python
 def send_tx_id (sender_acc_priv_key,recipient_address,amount,coin):
-    send_message_succ = send_tx(sender_acc_priv_key,recipient_address,amount,coin)
-    if send_message_succ==1:
-        time.sleep(20)
-        sender_address_tx = PrivateKeyTestnet(sender_acc_priv_key).get_transactions()
-        last_transac = sender_address_tx[0]
-        return last_transac
+    if coin==ETH:
+        signed_tx = sign_tx(sender_acc_priv_key,recipient_address,amount,coin)
+        broadcast_tx = w3.eth.sendRawTransaction(signed_tx2.rawTransaction)
+        return broadcast_tx
+    
+    elif coin==BTCTEST:
+        send_message_succ = send_tx(sender_acc_priv_key,recipient_address,amount,coin)
+        if send_message_succ==1:
+            time.sleep(20)
+            sender_address_tx = PrivateKeyTestnet(sender_acc_priv_key).get_transactions()
+            last_transac = sender_address_tx[0]
+            return last_transac
     else:
         print("transaction failed")
 ```    
@@ -67,6 +73,12 @@ This timer allows to wait for the network `confirming` the transaction and thus 
 After the timer is finished, the last transaction identifier is grabbed. Below an image of the code in action from the terminal.
 
 ![execution from the terminal](Screenshots/tx_from_terminal.png)
+
+## Section 3 - Transactions in Local Ethereum Network (katchcoin):
+
+<img src="Images/867.gif" width=150 height=150 align="left"/> To test the wallet in the local katchcoin Network with a consesus of Proof of Authority, two of the Ethereum addresses (address1 and address2) were instatiated with a generous amount of ether to complete transactions. Refer to the [wallet addresses file](https://github.com/CacheKatch/wallet/blob/main/wallet_addresses.txt) for private keys and addresses details. To load those addresses with ether, the `katchcoin.json` network file was modified 
+
+In  file 
 
 
 <p style="text-align: center;"> <font size="4"> Table 1 - Bit-test derived addresses </font></p>
@@ -98,6 +110,9 @@ After the timer is finished, the last transaction identifier is grabbed. Below a
   </tr>
   
 </table>
+
+
+
 
 ## Libraries and Dependencies
 
