@@ -76,9 +76,21 @@ After the timer is finished, the last transaction identifier is grabbed. Below a
 
 ## Section 3 - Transactions in Local Ethereum Network (katchcoin):
 
-<img src="Images/867.gif" width=150 height=150 align="left"/> To test the wallet in the local katchcoin Network with a consesus of Proof of Authority, two of the Ethereum addresses (address1 and address2) were instatiated with a generous amount of ether to complete transactions. Refer to the [wallet addresses file](https://github.com/CacheKatch/wallet/blob/main/wallet_addresses.txt) for private keys and addresses details. To load those addresses with ether, the `katchcoin.json` network file was modified 
+<img src="Images/867.gif" width=150 height=150 align="left"/> To test the wallet in the local katchcoin Network with a consensus of Proof of Authority, two of the Ethereum addresses (address1 and address2) were instatiated with a generous amount of ether to complete transactions. Refer to the [wallet addresses file](https://github.com/CacheKatch/wallet/blob/main/wallet_addresses.txt) for private keys and addresses details. To load those addresses with ether, the `katchcoin.json` network file was reconfigured in the section named `"alloc"` with their public addresses (without the preceding `0x` identifier) and initial balance. 
 
-In  file 
+Before executing wallet transactions with ethereum, katchcoin network nodes must be running. Instructions to run katchcoin private network nodes are [here](https://github.com/CacheKatch/ckcoin_blockchain/blob/main/README.md). 
+
+![execution from wallet.py](Screenshots/tx_from_terminal.png)
+
+Then a few transactions were succesfully tested using MyCrypto app, before executing transaction from the terminal. All of them were succesfull.
+
+
+<img src="Images/error_on_PoA_local_network.png" width=500 height=200 align="left"/> Although we got succesfull transaction, it was encountered a peculiar situation when executing more transactions to the local katchcoin network from the terminal. An error message appeared: `"Returned error: replacement transaction underpriced"`.  This error message seems to be related to having `pending` transactions on the network that compete with the new one.  
+
+
+
+
+
 
 
 <p style="text-align: center;"> <font size="4"> Table 1 - Bit-test derived addresses </font></p>
@@ -120,8 +132,11 @@ To operate the wallet, the following [requirements](https://github.com/CacheKatc
 
 In addition, `hd-wallet-derive` library must be installed prior to running the wallet_derive function. Instructions to install hd-wallet-derive are [here](HD_Wallet_Derive_Install_Guide.md)
 
+For katchcoin (ethereum) private network [instructions](https://github.com/CacheKatch/ckcoin_blockchain/blob/main/README.md) 
+
 ## Resources
 
 1) [Trilogy Education Services](https://www.trilogyed.com/)
 2) [crypto gif](https://icons8.com/preloaders/en/cryptocurrency_and_money/)
 3) [Bit Library by ofek](https://ofek.dev/bit/guide/transactions.html)
+4) Seting up katchcoin (ethereum) private network: (https://github.com/CacheKatch/ckcoin_blockchain) 
